@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Nelson Firmani space: mappa Tinn</title>
+    <link href="css/default.css" rel="stylesheet">
+    
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script>
+
+      function initialize() {
+        var tinn = new google.maps.LatLng(42.662261,13.696437);        
+        var entryPanoId = null;
+
+        var mapOptions = {
+          center: tinn,
+          zoom: 16,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        var map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+        
+        var panoramaOptions = {
+          position: tinn,
+          visible: true,
+          pov: {
+            heading: 0,
+            pitch: 0,
+            zoom: 1
+          },          
+          panoProvider:  getCustomPanorama
+        };
+        var panorama = new  google.maps.StreetViewPanorama(document.getElementById('panora'),panoramaOptions);
+        map.setStreetView(panorama);   
+
+       
+        var streetviewService = new google.maps.StreetViewService();
+
+        var radius = 50;
+        streetviewService.getPanoramaByLocation(tinn, radius,
+            function(result, status) {
+          if (status == google.maps.StreetViewStatus.OK) {            
+            google.maps.event.addListener(panorama, 'links_changed',
+              function() {
+                createCustomLinks(result.location.pano);
+              });
+          }
+        });    
+
+        
+    function getCustomPanoramaTileUrl(pano, zoom, tileX, tileY) {
+      switch (pano) {
+        case 'sviluppo':
+          return "images/pano/pano-sviluppo.jpg";
+          break;
+        case 'stage':
+          return "images/pano/pano-stage.jpg";
+          break;
+        case 'assistenza':
+          return "images/pano/pano-assistenza.jpg";
+          break;
+        default:
+          return null;
+      }
+    }
+   
+
+    function getCustomPanorama(pano, zoom, tileX, tileY) {
+      switch (pano) {
+
+        case 'sviluppo':
+          return {
+            location: {
+              pano: 'sviluppo',
+              description: 'Tinn - Area di Ideazione, Progettazione e Sviluppo Software'
+            },
+            links: [
+              { heading: 90,
+                description: 'Assistenza',
+                pano: 'assistenza'}
+            ],            
+            copyright: '2013 Tinn S.r.l.',            
+            tiles: {
+              tileSize: new google.maps.Size(5800, 2900),
+              worldSize: new google.maps.Size(5800, 2900),              
+              centerHeading: 270,
+              getTileUrl: getCustomPanoramaTileUrl
+            }
+          };
+          break;
+        case 'stage':
+          return {
+            location: {
+              pano: 'stage',
+              description: 'Tinn - Area di Ricerca, Formazione e Stage'
+            },
+            links: [
+              { heading: 270,
+                description: 'Assistenza',
+                pano: 'assistenza'}
+            ],            
+            copyright: '2013 Tinn S.r.l.',            
+            tiles: {
+              tileSize: new google.maps.Size(5800, 2900),
+              worldSize: new google.maps.Size(5800, 2900),              
+              centerHeading: 270,
+              getTileUrl: getCustomPanoramaTileUrl
+            }
+          };
+          break;
+        case 'assistenza':
+          return {
+            location: {
+              pano: 'assistenza',
+              description: 'Tinn - Area di Comunicazione Assistenza e Supporto'
+            },
+            links: [
+              { heading: 15,
+                description: 'Sviluppo',
+                pano: 'sviluppo'},
+              { heading: 100,
+                description: 'Formazione',
+                pano: 'stage'}
+            ],            
+            copyright: '2013 Tinn S.r.l.',
+            tiles: {
+              tileSize: new google.maps.Size(5800, 2900),
+              worldSize: new google.maps.Size(5800, 2900),              
+              centerHeading: 105,
+              getTileUrl: getCustomPanoramaTileUrl
+            }
+          };
+          break;
+
+        default:
+          return null;
+      }
+    }
+
+
+
+      function createCustomLinks(entryPanoId) {
+        var links = panorama.getLinks();
+        var panoId = panorama.getPano();
+
+        switch(panoId) {
+          case entryPanoId:
+            links.push({
+              heading: 25,
+              description : 'Tinn S.r.l.',
+              pano : 'sviluppo'
+            });
+            break;
+          case 'sviluppo':            
+            links.push({
+              heading: 195,
+              description : 'Uscita',
+              pano : entryPanoId
+            });
+            break;
+          default:
+            return;
+        }
+      }
+
+      }
+    </script>
+  </head>
+  <body onload="initialize()">
+    <div id="map_canvas" style="position:absolute; left:0px; top: 8px; width: 400px; height: 350px;"></div>
+    <div id="panora" style="position:absolute; left:410px; top: 8px; width: 800px; height: 350px;"></div>
+  </body>
+</html>
