@@ -5,3 +5,6 @@ laboratorio tecnologie cloud
 * Eclipse
 
 [nelson-firmani.appspot.com](http://nelson-firmani.appspot.com/)
+
+[Cloud Computing - nelson-firmani.appspot.com/slide/](http://nelson-firmani.appspot.com/slide/index.html#/bored)
+
